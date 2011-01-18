@@ -8,7 +8,7 @@ module KashingPlugin
   @@redis_client = false
   def self.redis
     if not @@redis_client
-      uri = URI.parse (ENV["REDISTOGO_URL"] || ENV["REDIS_URL"] || 'redis://localhost:6379')
+      uri = URI.parse(ENV["REDISTOGO_URL"] || ENV["REDIS_URL"] || 'redis://localhost:6379')
       @@redis_client = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password,
         :db => ENV["REDIS_DB_NUM"].to_i)
     end
