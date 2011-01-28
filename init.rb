@@ -126,13 +126,18 @@ module KashingPlugin
       name = name.to_sym
       c = self.kashing_fields[name]
       return false if not c
-      value = c[:func].call(self)
-      begin
-        value = c[:store].call(value) if c[:store]
-      rescue
+      if c[:store]
+        begin
+          value = c[:store].call(c[:func].call(self))
+        rescue
+          # just return value
+        end
+      else
+        value = c[:func].call(self)
+        value = value.to_json if not value.is_a? String
       end
 
-      KashingPlugin.redis.set(kash_key_name(name), value.to_json)
+      KashingPlugin.redis.set(kash_key_name(name), value)
       c[:type] = value.class
       if self.kash_ttl(name)
         self.clear_kash(name, self.kash_ttl(name))
